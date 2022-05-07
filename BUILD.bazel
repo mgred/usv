@@ -1,0 +1,67 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_project")
+load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm", "js_library", "nodejs_binary")
+load("//tools:typescript.bzl", "ts_build")
+
+exports_files(["tsconfig.json"], visibility = ["//:__subpackages__"])
+
+ts_build(
+    name = "usv",
+    srcs = ["index.ts"],
+)
+
+ts_project(
+    name = "usv.types",
+    srcs = ["index.ts"],
+    extends = ":tsconfig.json",
+    tsconfig = {
+        "compilerOptions": {
+            "emitDeclarationOnly": True,
+        },
+    },
+    declaration = True,
+    emit_declaration_only = True,
+)
+
+js_library(
+    name = "usv.lib",
+    package_name = "usv",
+    srcs = ["package.json"],
+    deps = [
+        ":usv.commonjs",
+        ":usv.es2015",
+        ":usv.types",
+        ":usv.umd"
+    ],
+)
+
+ts_project(
+    name = "example_ts",
+    srcs = ["example.ts"],
+    extends = "//:tsconfig.json",
+    tsconfig = {
+        "compilerOptions": {
+            "declaration": False,
+        },
+    },
+    deps = [":usv.lib"],
+)
+
+nodejs_binary(
+    name = "example",
+    entry_point = "example.ts",
+    data = [":example_ts"],
+)
+
+pkg_npm(
+    name = "usv",
+    package_name = "usv",
+    srcs = ["package.json"],
+    substitutions = {"0.0.0-PLACEHOLDER": "{PACKAGE_VERSION}"},
+    deps = [
+        ":usv.commonjs",
+        ":usv.es2015",
+        ":usv.types",
+        ":usv.umd",
+        ":README.md",
+    ],
+)

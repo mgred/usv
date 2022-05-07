@@ -1,0 +1,20 @@
+{
+  "name": "usv",
+  "description": "A javascript package for Unicode Separated Values (USV).",
+  "version": "0.0.0-PLACEHOLDER",
+  "types": "./index.d.ts",
+  "main": "./commonjs/index.js",
+  "modules": "./es2015/index.js",
+  "exports": {
+    "node": "./commonjs/index.js",
+    "es2015": "./es2015/index.js",
+    "require": "./commonjs/index.js"
+  },
+  "devDependencies": {
+    "@bazel/typescript": "5.4.2",
+    "typescript": "^4.6.4"
+  },
+  "scripts": {
+    "build": "bazel build //..."
+  }
+}
