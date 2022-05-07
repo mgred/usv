@@ -63,5 +63,6 @@ pkg_npm(
         ":usv.types",
         ":usv.umd",
         ":README.md",
+        ":index.ts",
     ],
 )
