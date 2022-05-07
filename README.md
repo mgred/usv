@@ -10,3 +10,9 @@ The package contains declaration files for TypeScript as well as the following _
 | CommonJS | ES6    |
 | ES2015   | ES6    |
 | UMD      | ES6    |
+
+## Installation
+
+```bash
+npm i usv
+```
