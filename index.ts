@@ -1,3 +1,31 @@
+export function transform(
+  value: string,
+  options?: Partial<PrintOptions>
+): string {
+  value = value.trim();
+
+  if (!value) {
+    return value;
+  }
+
+  options = defaultOptions(options);
+
+  const pass: ParseFn = (c) => c;
+  const unit = parseFactory(USVSeparator.UNIT, options.separators.unit);
+  const record = parseFactory(USVSeparator.RECORD, options.separators.record);
+  const group = parseFactory(USVSeparator.GROUP, options.separators.group);
+  const file = parseFactory(USVSeparator.FILE, options.separators.file);
+
+  let char: string;
+  let i = 0;
+  let output = "";
+
+  while ((char = value.charAt(i++)))
+    output += file(group(record(unit(pass))))(char);
+
+  return options.finalNewline ? addNewline(output) : output;
+}
+
 export enum USVSeparator {
   FILE = "\u241C",
   GROUP = "\u241D",
@@ -29,46 +57,24 @@ const DEFAULT_OPTIONS: PrintOptions = {
   },
 };
 
-export function transform(
-  value: string,
-  options?: Partial<PrintOptions>
-): string {
-  value = value.trim();
+function defaultOptions(options: Partial<PrintOptions>): PrintOptions {
+  return { ...DEFAULT_OPTIONS, ...options };
+}
 
-  if (!value) {
-    return value;
-  }
+function addNewline(value: string): string {
+  return `${value}${NEWLINE}`;
+}
 
-  options = { ...DEFAULT_OPTIONS, ...options };
+type ParseFn = (v: string) => string;
 
-  let char = "";
-  let i = 0;
-  let output = "";
+function parse(s: USVSeparator, o: string, x: ParseFn): ParseFn {
+  return (v) => {
+    return v === s ? o : x(v);
+  };
+}
 
-  while ((char = value.charAt(i++))) {
-    switch (char) {
-      case USVSeparator.UNIT:
-        output += options.separators.unit;
-        continue;
-      case USVSeparator.RECORD:
-        output += options.separators.record;
-        continue;
-      case USVSeparator.GROUP:
-        output += options.separators.group;
-        continue;
-      case USVSeparator.FILE:
-        output += options.separators.file;
-        continue;
-      default:
-        output += char;
-    }
-  }
-
-  if (options.finalNewline) {
-    output += NEWLINE;
-  }
-
-  return output;
+function parseFactory(s: USVSeparator, o: string): (x: ParseFn) => ParseFn {
+  return (x) => parse(s, o, x);
 }
 
 export function transformToTSV(value: string): string {
