@@ -1,25 +1,45 @@
 load("@npm//@bazel/typescript:index.bzl", "ts_project")
-load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm", "js_library", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "nodejs_binary", "pkg_npm")
 load("//tools:typescript.bzl", "ts_build")
 
-exports_files(["tsconfig.json"], visibility = ["//:__subpackages__"])
+exports_files(
+    ["tsconfig.json"],
+    visibility = ["//:__subpackages__"],
+)
+
+OUTPUTS = {
+    "commonjs": "es6",
+    "umd": "es6",
+    "es2015": "es6",
+}
 
 ts_build(
     name = "usv",
+    outputs = OUTPUTS,
     srcs = ["index.ts"],
 )
 
 ts_project(
     name = "usv.types",
     srcs = ["index.ts"],
+    declaration = True,
+    emit_declaration_only = True,
     extends = ":tsconfig.json",
     tsconfig = {
         "compilerOptions": {
             "emitDeclarationOnly": True,
         },
     },
-    declaration = True,
-    emit_declaration_only = True,
+)
+
+filegroup(
+    name = "builds",
+    srcs = [
+        ":usv.commonjs",
+        ":usv.es2015",
+        ":usv.types",
+        ":usv.umd",
+    ],
 )
 
 js_library(
@@ -28,9 +48,7 @@ js_library(
     srcs = ["package.json"],
     deps = [
         ":usv.commonjs",
-        ":usv.es2015",
         ":usv.types",
-        ":usv.umd"
     ],
 )
 
@@ -48,8 +66,17 @@ ts_project(
 
 nodejs_binary(
     name = "example",
-    entry_point = "example.ts",
     data = [":example_ts"],
+    entry_point = "example.ts",
+)
+
+filegroup(
+    name = "source",
+    srcs = [
+        ":LICENSE",
+        ":README.md",
+        ":index.ts",
+    ],
 )
 
 pkg_npm(
@@ -58,11 +85,7 @@ pkg_npm(
     srcs = ["package.json"],
     substitutions = {"0.0.0-PLACEHOLDER": "{PACKAGE_VERSION}"},
     deps = [
-        ":usv.commonjs",
-        ":usv.es2015",
-        ":usv.types",
-        ":usv.umd",
-        ":README.md",
-        ":index.ts",
+        ":builds",
+        ":source",
     ],
 )
