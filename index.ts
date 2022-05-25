@@ -41,8 +41,8 @@ export interface SeparatorOptions {
 }
 
 export interface PrintOptions {
-  finalNewline: boolean;
-  separators: SeparatorOptions;
+  finalNewline?: boolean;
+  separators?: SeparatorOptions;
 }
 
 const NEWLINE = "\n";
@@ -58,7 +58,14 @@ const DEFAULT_OPTIONS: PrintOptions = {
 };
 
 function defaultOptions(options: Partial<PrintOptions>): PrintOptions {
-  return { ...DEFAULT_OPTIONS, ...options };
+  return {
+    ...DEFAULT_OPTIONS,
+    ...options,
+    separators: {
+      ...DEFAULT_OPTIONS.separators,
+      ...options.separators,
+    },
+  };
 }
 
 function addNewline(value: string): string {
