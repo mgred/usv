@@ -27,9 +27,19 @@ args: while ((arg = args.shift()))
   for (const [t, a] of cliOptions.entries())
     if (t(arg) && (a(arg, args) || true)) continue args;
 
-for (const v of values) {
-  const result = transform(v, options as Partial<PrintOptions>);
+let l = values.length;
+let i = 0;
+const checks = [
+  (i: number) => i + 1 < l,
+  () => Boolean(!options.finalNewline),
+];
+for (; i < l; i++) {
+  const result = transform(values[i], options as Partial<PrintOptions>);
   stdout.write(result);
+
+  for (const check of checks)
+    if (check(i)) stdout.write("\n");
+    else break;
 }
 
 function printUnknownOption(option: string): void {
