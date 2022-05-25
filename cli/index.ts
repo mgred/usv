@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { existsSync, readFileSync } from "fs";
 import { argv, exit, stdout } from "process";
 import { PrintOptions, SeparatorOptions, transform } from "usv";
