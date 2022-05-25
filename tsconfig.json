@@ -2,7 +2,7 @@
   "compilerOptions": {
     "declaration": true,
     "moduleResolution": "Node",
-    "module": "CommonJS",
+    "module": "ESNext",
     "target": "ES2015",
     "baseUrl": ".",
     "paths": {
