@@ -3,7 +3,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "js_library", "nodejs_binary", "pk
 load("//tools:typescript.bzl", "ts_build")
 
 exports_files(
-    ["tsconfig.json"],
+    ["tsconfig.json", "LICENSE"],
     visibility = ["//:__subpackages__"],
 )
 
@@ -50,6 +50,18 @@ js_library(
         ":usv.commonjs",
         ":usv.types",
     ],
+    visibility = ["//:__subpackages__"]
+)
+
+js_library(
+    name = "usv.esm",
+    package_name = "usv",
+    srcs = ["package.json"],
+    deps = [
+        ":usv.es2015",
+        ":usv.types",
+    ],
+    visibility = ["//:__subpackages__"]
 )
 
 ts_project(

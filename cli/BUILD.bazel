@@ -1,0 +1,80 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_project")
+load("@npm//@bazel/esbuild:index.bzl", "esbuild")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary", "pkg_npm")
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
+    deps = ["//:tsconfig.json"],
+)
+
+ts_project(
+    name = "cli.cjs",
+    srcs = ["index.ts"],
+    extends = ":tsconfig",
+    tsconfig = {
+        "compilerOptions": {
+            "module": "CommonJS",
+        },
+    },
+    deps = [
+        "//:usv.lib",
+        "@npm//@types/node",
+    ],
+)
+
+nodejs_binary(
+    name = "bin",
+    data = [":cli.cjs"],
+    entry_point = "index.ts",
+)
+
+ts_project(
+    name = "cli.esm",
+    srcs = ["index.ts"],
+    out_dir = "esm",
+    tsconfig = ":tsconfig",
+    deps = [
+        "//:usv.esm",
+        "@npm//@types/node",
+    ],
+)
+
+esbuild(
+    name = "bundle",
+    entry_point = ":esm/index.js",
+    metafile = False,
+    output = "dist/index.js",
+    output_dir = "dist",
+    platform = "node",
+    sourcemap = "inline",
+    target = "es2015",
+    deps = [":cli.esm"],
+)
+
+genrule(
+    name = "license",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE"],
+    cmd = "cp $(SRCS) $(OUTS)",
+)
+
+filegroup(
+    name = "source",
+    srcs = [
+        "LICENSE",
+        "README.md",
+        "index.ts",
+    ],
+)
+
+pkg_npm(
+    name = "cli",
+    package_name = "usv-cli",
+    srcs = ["package.json"],
+    substitutions = {"0.0.0-PLACEHOLDER": "{PACKAGE_VERSION}"},
+    deps = [
+        ":bundle",
+        ":source",
+    ],
+)

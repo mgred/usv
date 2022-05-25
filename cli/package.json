@@ -1,0 +1,14 @@
+{
+  "name": "usv-cli",
+  "description": "Command Line Interface for usv",
+  "version": "0.0.0-PLACEHOLDER",
+  "bin": {
+    "usv": "dist/index.js"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mgred/usv.git",
+    "directory": "cli"
+  }
+}
