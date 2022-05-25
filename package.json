@@ -5,7 +5,7 @@
   "version": "0.0.0-PLACEHOLDER",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mgre/usv"
+    "url": "https://github.com/mgre/usv.git"
   },
   "types": "./index.d.ts",
   "main": "./commonjs/index.js",
