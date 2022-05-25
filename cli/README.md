@@ -27,11 +27,11 @@ usv [OPTION]... [FILE]...
 Reading from file:
 
 ```bash
-usv example.usv example42.usv
+usv -n example.usv example42.usv
 ```
 
 Reading from `stdin`:
 
 ```bash
-echo "a␟b␞c␟d␝e␟f␞g␟h␜i␟j␞k␟l␝m␟n␞o␟p" | usv
+echo "a␟b␞c␟d␝e␟f␞g␟h␜i␟j␞k␟l␝m␟n␞o␟p" | usv --
 ```
